@@ -1,17 +1,18 @@
 const WebSocket = require("ws");
 
 const PORT = process.env.PORT || 3000;
-const wss = new WebSocket.Server({ port: PORT });
 
-// Stockage léger des pseudo (optionnel)
+// ⚠️ IMPORTANT: utiliser server HTTP pour Render
+const server = require("http").createServer();
+const wss = new WebSocket.Server({ server });
+
 let users = new Map();
 
-console.log("Serveur WebSocket démarré sur port", PORT);
+console.log("Serveur WebSocket démarré");
 
 wss.on("connection", (ws) => {
     console.log("Client connecté");
 
-    // Quand un message arrive
     ws.on("message", (data) => {
         let msg;
 
@@ -21,7 +22,6 @@ wss.on("connection", (ws) => {
             return;
         }
 
-        // 1. Enregistrement du pseudo
         if (msg.type === "join") {
             users.set(ws, msg.name || "Anonyme");
 
@@ -31,7 +31,6 @@ wss.on("connection", (ws) => {
             });
         }
 
-        // 2. Message chat
         if (msg.type === "chat") {
             const name = users.get(ws) || "Anonyme";
 
@@ -43,7 +42,6 @@ wss.on("connection", (ws) => {
         }
     });
 
-    // Déconnexion
     ws.on("close", () => {
         const name = users.get(ws);
         users.delete(ws);
@@ -57,7 +55,6 @@ wss.on("connection", (ws) => {
     });
 });
 
-// Fonction broadcast (groupe unique)
 function broadcast(data) {
     const json = JSON.stringify(data);
 
@@ -67,3 +64,8 @@ function broadcast(data) {
         }
     });
 }
+
+// ⚠️ Render écoute ce server HTTP
+server.listen(PORT, () => {
+    console.log("Server running on port", PORT);
+});
