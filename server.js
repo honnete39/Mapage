@@ -1,14 +1,14 @@
+const http = require("http");
 const WebSocket = require("ws");
 
 const PORT = process.env.PORT || 3000;
 
-// ⚠️ IMPORTANT: utiliser server HTTP pour Render
-const server = require("http").createServer();
+// Serveur HTTP (OBLIGATOIRE pour Render)
+const server = http.createServer();
+
 const wss = new WebSocket.Server({ server });
 
 let users = new Map();
-
-console.log("Serveur WebSocket démarré");
 
 wss.on("connection", (ws) => {
     console.log("Client connecté");
@@ -22,6 +22,7 @@ wss.on("connection", (ws) => {
             return;
         }
 
+        // JOIN
         if (msg.type === "join") {
             users.set(ws, msg.name || "Anonyme");
 
@@ -31,12 +32,13 @@ wss.on("connection", (ws) => {
             });
         }
 
+        // CHAT
         if (msg.type === "chat") {
             const name = users.get(ws) || "Anonyme";
 
             broadcast({
                 type: "chat",
-                name: name,
+                name,
                 message: msg.message
             });
         }
@@ -58,14 +60,14 @@ wss.on("connection", (ws) => {
 function broadcast(data) {
     const json = JSON.stringify(data);
 
-    wss.clients.forEach((client) => {
+    wss.clients.forEach(client => {
         if (client.readyState === WebSocket.OPEN) {
             client.send(json);
         }
     });
 }
 
-// ⚠️ Render écoute ce server HTTP
+// IMPORTANT Render écoute ici
 server.listen(PORT, () => {
-    console.log("Server running on port", PORT);
+    console.log("Server WebSocket running on port", PORT);
 });
