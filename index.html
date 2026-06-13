@@ -23,7 +23,8 @@ let ws;
 function join() {
     const name = document.getElementById("name").value;
 
-    ws = new WebSocket("wss://localhost:3000");
+    // 🔥 IMPORTANT: remplace par ton URL Render
+    ws = new WebSocket("wss://TON-SERVICE.onrender.com");
 
     ws.onopen = () => {
         ws.send(JSON.stringify({
