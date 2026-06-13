@@ -75,20 +75,29 @@ button {
     </div>
 
 </div>
-
 <script>
 let ws;
 
 function join() {
     const name = document.getElementById("name").value;
 
-    ws = new WebSocket("wss://chatapp-2g1r.onrender.com");
+    ws = new WebSocket("wss://chatapp-v4f5.onrender.com");
 
     ws.onopen = () => {
+        console.log("CONNECTED");
+
         ws.send(JSON.stringify({
             type: "join",
-            name
+            name: name
         }));
+    };
+
+    ws.onerror = (err) => {
+        console.log("WS ERROR", err);
+    };
+
+    ws.onclose = () => {
+        console.log("WS CLOSED");
     };
 
     ws.onmessage = (event) => {
@@ -97,7 +106,9 @@ function join() {
 
         // historique
         if (data.type === "history") {
+            chat.innerHTML = ""; // important
             data.messages.forEach(m => render(m));
+            return;
         }
 
         render(data);
@@ -119,6 +130,11 @@ function render(data) {
 }
 
 function send() {
+    if (!ws || ws.readyState !== WebSocket.OPEN) {
+        alert("Connexion pas prête");
+        return;
+    }
+
     ws.send(JSON.stringify({
         type: "chat",
         message: document.getElementById("msg").value
@@ -127,6 +143,5 @@ function send() {
     document.getElementById("msg").value = "";
 }
 </script>
-
 </body>
 </html>
