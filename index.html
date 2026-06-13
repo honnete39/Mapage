@@ -24,7 +24,7 @@ function join() {
     const name = document.getElementById("name").value;
 
     // 🔥 IMPORTANT: remplace par ton URL Render
-    ws = new WebSocket("wss://TON-SERVICE.onrender.com");
+    ws = new WebSocket("wss://chatapp-v4f5.onrender.com);
 
     ws.onopen = () => {
         ws.send(JSON.stringify({
