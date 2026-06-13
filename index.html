@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Chat Groupe</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #f0f0f0;
+}
+
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* messages */
+#chat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    background: #fafafa;
+}
+
+/* input zone fixée en bas */
+.input-box {
+    display: flex;
+    padding: 10px;
+    background: white;
+    border-top: 1px solid #ccc;
+}
+
+input {
+    flex: 1;
+    padding: 10px;
+}
+
+button {
+    width: 100px;
+    background: green;
+    color: white;
+    border: none;
+}
+
+.msg {
+    margin: 5px 0;
+    padding: 5px;
+}
+
+.system {
+    text-align: center;
+    color: gray;
+    font-style: italic;
+}
+</style>
+</head>
+
+<body>
+
+<div class="chat-container">
+
+    <div style="padding:10px;background:white;">
+        <input id="name" placeholder="Pseudo">
+        <button onclick="join()">Join</button>
+    </div>
+
+    <div id="chat"></div>
+
+    <div class="input-box">
+        <input id="msg" placeholder="Message">
+        <button onclick="send()">Send</button>
+    </div>
+
+</div>
+
+<script>
+let ws;
+
+function join() {
+    const name = document.getElementById("name").value;
+
+    ws = new WebSocket("wss://chatapp-v4f5.onrender.com");
+
+    ws.onopen = () => {
+        ws.send(JSON.stringify({
+            type: "join",
+            name
+        }));
+    };
+
+    ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        const chat = document.getElementById("chat");
+
+        // historique
+        if (data.type === "history") {
+            data.messages.forEach(m => render(m));
+        }
+
+        render(data);
+    };
+}
+
+function render(data) {
+    const chat = document.getElementById("chat");
+
+    if (data.type === "chat") {
+        chat.innerHTML += `<div class="msg"><b>${data.name}:</b> ${data.message}</div>`;
+    }
+
+    if (data.type === "system") {
+        chat.innerHTML += `<div class="system">${data.message}</div>`;
+    }
+
+    chat.scrollTop = chat.scrollHeight;
+}
+
+function send() {
+    ws.send(JSON.stringify({
+        type: "chat",
+        message: document.getElementById("msg").value
+    }));
+
+    document.getElementById("msg").value = "";
+}
+</script>
+
+</body>
+</html>
