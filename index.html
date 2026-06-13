@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ma Page</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  text-align: center;
+  background: #f2f2f2;
+}
+
+header {
+  background: #007bff;
+  color: white;
+  padding: 20px;
+}
+
+main {
+  margin-top: 60px;
+}
+
+button {
+  padding: 12px 25px;
+  background: green;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  background: darkgreen;
+}
+
+.card {
+  background: white;
+  margin: 20px auto;
+  padding: 20px;
+  width: 80%;
+  max-width: 400px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Bienvenue 🚀</h1>
+</header>
+
+<main>
+
+  <div class="card">
+    <p id="text">Clique pour changer le texte</p>
+    <button onclick="changerTexte()">Clique ici</button>
+  </div>
+
+</main>
+
+<script>
+function changerTexte() {
+  document.getElementById("text").innerHTML =
+    "🔥 Texte modifié avec JavaScript !";
+}
+</script>
+
+</body>
+</html>
