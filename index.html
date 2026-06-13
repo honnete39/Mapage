@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat WebSocket</title>
+</head>
+<body>
+
+<h2>Chat Groupe Unique</h2>
+
+<input id="name" placeholder="Pseudo">
+<button onclick="join()">Rejoindre</button>
+
+<br><br>
+
+<div id="chat" style="border:1px solid black;height:300px;overflow:auto;"></div>
+
+<input id="msg" placeholder="Message">
+<button onclick="send()">Envoyer</button>
+
+<script>
+let ws;
+
+function join() {
+    const name = document.getElementById("name").value;
+
+    ws = new WebSocket("ws://localhost:3000");
+
+    ws.onopen = () => {
+        ws.send(JSON.stringify({
+            type: "join",
+            name: name
+        }));
+    };
+
+    ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        const chat = document.getElementById("chat");
+
+        if (data.type === "system") {
+            chat.innerHTML += `<p><i>${data.message}</i></p>`;
+        }
+
+        if (data.type === "chat") {
+            chat.innerHTML += `<p><b>${data.name}:</b> ${data.message}</p>`;
+        }
+
+        chat.scrollTop = chat.scrollHeight;
+    };
+}
+
+function send() {
+    const msg = document.getElementById("msg").value;
+
+    ws.send(JSON.stringify({
+        type: "chat",
+        message: msg
+    }));
+
+    document.getElementById("msg").value = "";
+}
+</script>
+
+</body>
+</html>
