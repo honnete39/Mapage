@@ -1,7 +1,7 @@
 {
   "name": "exemple",
   "short_name": "exemple",
-  "start_url": "/index.htmk",
+  "start_url": "/index.html",
   "display": "standalone",
   "icons": [
     {
